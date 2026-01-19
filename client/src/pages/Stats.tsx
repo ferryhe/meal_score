@@ -1,38 +1,79 @@
+import { useState, useMemo } from "react";
 import { useStore } from "@/lib/store";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, Cell } from 'recharts';
-import { ScrollArea } from "@/components/ui/scroll-area";
-import { Trophy } from "lucide-react";
+import { Trophy, Calendar } from "lucide-react";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
 export default function Stats() {
   const { members, events } = useStore();
+  
+  // Get all available years from events
+  const years = useMemo(() => {
+    const yearsSet = new Set<string>();
+    events.forEach(event => {
+      const year = new Date(event.date).getFullYear().toString();
+      yearsSet.add(year);
+    });
+    // Add current year if no events
+    if (yearsSet.size === 0) {
+      yearsSet.add(new Date().getFullYear().toString());
+    }
+    return Array.from(yearsSet).sort((a, b) => b.localeCompare(a));
+  }, [events]);
 
-  // Calculate points per member
-  const memberPoints = members.map(member => {
-    const totalPoints = events.reduce((sum, event) => {
-      if (event.attendees.includes(member.id)) {
-        return sum + event.points;
-      }
-      return sum;
-    }, 0);
-    const eventCount = events.filter(e => e.attendees.includes(member.id)).length;
-    return {
-      id: member.id,
-      name: member.name,
-      points: totalPoints,
-      events: eventCount
-    };
-  }).sort((a, b) => b.points - a.points); // Sort descending
+  const [selectedYear, setSelectedYear] = useState<string>(years[0]);
 
-  const topMembers = memberPoints.slice(0, 10); // For chart
+  // Filter events by selected year
+  const filteredEvents = useMemo(() => {
+    return events.filter(event => new Date(event.date).getFullYear().toString() === selectedYear);
+  }, [events, selectedYear]);
+
+  // Calculate points per member for the selected year
+  const memberPoints = useMemo(() => {
+    return members.map(member => {
+      const totalPoints = filteredEvents.reduce((sum, event) => {
+        if (event.attendees.includes(member.id)) {
+          return sum + event.points;
+        }
+        return sum;
+      }, 0);
+      const eventCount = filteredEvents.filter(e => e.attendees.includes(member.id)).length;
+      return {
+        id: member.id,
+        name: member.name,
+        points: totalPoints,
+        events: eventCount
+      };
+    }).sort((a, b) => b.points - a.points);
+  }, [members, filteredEvents]);
+
+  const topMembers = memberPoints.slice(0, 10);
 
   return (
-    <div className="space-y-6 animate-in fade-in duration-500">
-      <h2 className="text-2xl font-bold font-heading">积分统计</h2>
+    <div className="space-y-6 animate-in fade-in duration-500 pb-20">
+      <div className="flex items-center justify-between">
+        <h2 className="text-2xl font-bold font-heading">积分统计</h2>
+        <div className="flex items-center gap-2">
+          <Calendar className="h-4 w-4 text-muted-foreground" />
+          <Select value={selectedYear} onValueChange={setSelectedYear}>
+            <SelectTrigger className="w-[100px] h-9">
+              <SelectValue placeholder="年份" />
+            </SelectTrigger>
+            <SelectContent>
+              {years.map(year => (
+                <SelectItem key={year} value={year}>{year}年</SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
+      </div>
 
       <Card>
         <CardHeader>
-          <CardTitle className="text-sm font-medium text-muted-foreground">积分排行榜 (Top 10)</CardTitle>
+          <CardTitle className="text-sm font-medium text-muted-foreground">
+            {selectedYear}年 积分排行榜 (Top 10)
+          </CardTitle>
         </CardHeader>
         <CardContent className="h-[250px] w-full">
           <ResponsiveContainer width="100%" height="100%">
@@ -61,7 +102,7 @@ export default function Stats() {
       </Card>
 
       <div className="space-y-4">
-        <h3 className="font-semibold text-lg px-2">全员明细</h3>
+        <h3 className="font-semibold text-lg px-2">{selectedYear}年 全员明细</h3>
         <div className="grid gap-3">
           {memberPoints.map((member, index) => (
             <div 
@@ -78,12 +119,17 @@ export default function Stats() {
                 </div>
               </div>
               <div className="flex items-center gap-2">
-                {index < 3 && <Trophy className={`w-4 h-4 ${index === 0 ? 'text-yellow-500' : index === 1 ? 'text-gray-400' : 'text-amber-700'}`} />}
+                {index < 3 && member.points > 0 && <Trophy className={`w-4 h-4 ${index === 0 ? 'text-yellow-500' : index === 1 ? 'text-gray-400' : 'text-amber-700'}`} />}
                 <span className="text-xl font-bold font-heading text-primary">{member.points}</span>
                 <span className="text-xs text-muted-foreground pt-1">分</span>
               </div>
             </div>
           ))}
+          {memberPoints.length === 0 && (
+            <div className="text-center py-10 text-muted-foreground">
+              该年份暂无聚餐记录
+            </div>
+          )}
         </div>
       </div>
     </div>
