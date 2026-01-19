@@ -16,7 +16,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
     <div className="flex flex-col h-screen bg-background max-w-md mx-auto shadow-2xl overflow-hidden border-x border-border">
       {/* Header */}
       <header className="bg-primary px-6 py-4 text-primary-foreground shadow-md z-10">
-        <h1 className="text-xl font-heading font-bold">聚餐积分助手</h1>
+        <h1 className="text-xl font-heading font-bold">牛肉面群积分助手</h1>
       </header>
 
       {/* Main Content */}
