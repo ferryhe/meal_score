@@ -78,6 +78,10 @@ export async function registerRoutes(
   _httpServer: Server,
   app: Express,
 ): Promise<Server> {
+  app.get("/api/health", (_req, res) => {
+    res.status(200).json({ status: "ok" });
+  });
+
   app.get("/api/members", async (_req, res) => {
     const members = await storage.listMembers();
     res.json(members);

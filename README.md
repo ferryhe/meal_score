@@ -97,6 +97,12 @@ Outbound internet access is required for IP geolocation lookups.
 6. Deactivate a member from “成员” (they will no longer appear in “记分”).
 
 ## Docker Deployment (Amazon EC2 / t3.medium)
+Create a `.env` file (copy from `.env.example`) and set:
+- `POSTGRES_USER`
+- `POSTGRES_PASSWORD`
+- `POSTGRES_DB`
+- `DATABASE_URL` (should reference the db service, e.g. `postgresql://user:pass@db:5432/dbname`)
+
 1. Start Postgres:
    `docker compose up -d db`
 2. Run database setup (one-time or when schema changes):
@@ -108,7 +114,7 @@ Outbound internet access is required for IP geolocation lookups.
 By default the app listens on `http://<server-ip>:5000`.
 
 You can also run the helper script:
-- `bash script/deploy-ec2.sh`
+- `bash script/deploy-ec2.sh` (expects a `.env` file in the project root)
 
 If you already have Caddy running in Docker, add a reverse proxy rule that
 points to `http://<host-ip>:5000`, or attach the app container to Caddy's
@@ -124,6 +130,9 @@ network and proxy to the service name.
   1) `docker compose build app`
   2) `docker compose up -d app`
   3) If schema changed: `docker compose --profile tools run --rm migrate`
+
+The app container has a healthcheck on `GET /api/health` and both app/db use
+`restart: unless-stopped`.
 
 ## Customization Tips
 - Seed members: edit `INITIAL_MEMBERS` in `client/src/lib/store.ts`.
