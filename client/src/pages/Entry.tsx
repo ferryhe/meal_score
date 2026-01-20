@@ -48,31 +48,36 @@ export default function Entry() {
     setSelectedIds(next);
   };
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     if (count === 0) {
       toast({ title: "请选择参与人员", variant: "destructive" });
       return;
     }
 
-    addEvent({
-      date,
-      location: location || "未填写地点",
-      description: description || "聚餐",
-      attendees: Array.from(selectedIds),
-      points: finalPoints
-    });
+    try {
+      await addEvent({
+        date,
+        location: location || "未填写地点",
+        description: description || "聚餐",
+        attendees: Array.from(selectedIds),
+        points: finalPoints,
+      });
 
-    toast({
-      title: "记录保存成功",
-      description: `本次聚餐 ${count} 人，每人 ${finalPoints} 分`,
-    });
+      toast({
+        title: "记录保存成功",
+        description: `本次聚餐 ${count} 人，每人 ${finalPoints} 分`,
+      });
 
-    // Reset or Redirect
-    setSelectedIds(new Set());
-    setLocation("");
-    setDescription("");
-    setManualPoints(null);
-    setLocationPath('/history');
+      // Reset or Redirect
+      setSelectedIds(new Set());
+      setLocation("");
+      setDescription("");
+      setManualPoints(null);
+      setLocationPath("/history");
+    } catch (error) {
+      console.error("Failed to save event.", error);
+      toast({ title: "保存失败，请稍后重试", variant: "destructive" });
+    }
   };
 
   return (

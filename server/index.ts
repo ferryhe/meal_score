@@ -2,6 +2,12 @@ import express, { type Request, Response, NextFunction } from "express";
 import { registerRoutes } from "./routes";
 import { serveStatic } from "./static";
 import { createServer } from "http";
+import { type IStorage, MemStorage } from "./storage";
+import { DbStorage } from "./db";
+
+export const storage: IStorage = process.env.DATABASE_URL
+  ? new DbStorage()
+  : new MemStorage();
 
 const app = express();
 const httpServer = createServer(app);
@@ -11,6 +17,8 @@ declare module "http" {
     rawBody: unknown;
   }
 }
+
+app.set("trust proxy", true);
 
 app.use(
   express.json({

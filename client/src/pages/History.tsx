@@ -14,10 +14,15 @@ export default function History() {
     return ids.map(id => members.find(m => m.id === id)?.name).filter(Boolean).join(", ");
   };
 
-  const handleDelete = (id: string) => {
+  const handleDelete = async (id: string) => {
     if (confirm("确定要删除这条记录吗？删除后积分将重新计算。")) {
-      deleteEvent(id);
-      toast({ title: "已删除记录" });
+      try {
+        await deleteEvent(id);
+        toast({ title: "已删除记录" });
+      } catch (error) {
+        console.error("Failed to delete event.", error);
+        toast({ title: "删除失败，请稍后重试", variant: "destructive" });
+      }
     }
   };
 

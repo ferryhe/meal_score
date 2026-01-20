@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useStore } from "@/lib/store";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, Cell } from 'recharts';
@@ -23,6 +23,12 @@ export default function Stats() {
   }, [events]);
 
   const [selectedYear, setSelectedYear] = useState<string>(years[0]);
+
+  useEffect(() => {
+    if (!years.includes(selectedYear)) {
+      setSelectedYear(years[0]);
+    }
+  }, [years, selectedYear]);
 
   // Filter events by selected year
   const filteredEvents = useMemo(() => {

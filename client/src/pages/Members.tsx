@@ -24,24 +24,35 @@ export default function Members() {
     m.name.toLowerCase().includes(search.toLowerCase())
   );
 
-  const handleAddMember = () => {
+  const handleAddMember = async () => {
     if (!newMemberName.trim()) return;
-    addMember(newMemberName.trim());
-    setNewMemberName("");
-    setIsDialogOpen(false);
-    toast({
-      title: "添加成功",
-      description: `已添加成员: ${newMemberName}`,
-    });
+    try {
+      const member = await addMember(newMemberName.trim());
+      if (!member) return;
+      setNewMemberName("");
+      setIsDialogOpen(false);
+      toast({
+        title: "添加成功",
+        description: `已添加成员: ${newMemberName}`,
+      });
+    } catch (error) {
+      console.error("Failed to add member.", error);
+      toast({ title: "添加失败，请稍后重试", variant: "destructive" });
+    }
   };
 
-  const handleDelete = (id: string, name: string) => {
+  const handleDelete = async (id: string, name: string) => {
     if (confirm(`确定要删除 ${name} 吗?`)) {
-      deleteMember(id);
-      toast({
-        title: "删除成功",
-        description: `已删除成员: ${name}`,
-      });
+      try {
+        await deleteMember(id);
+        toast({
+          title: "删除成功",
+          description: `已删除成员: ${name}`,
+        });
+      } catch (error) {
+        console.error("Failed to delete member.", error);
+        toast({ title: "删除失败，请稍后重试", variant: "destructive" });
+      }
     }
   };
 

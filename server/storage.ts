@@ -1,38 +1,104 @@
-import { type User, type InsertUser } from "@shared/schema";
 import { randomUUID } from "crypto";
-
-// modify the interface with any CRUD methods
-// you might need
+import {
+  type EventWithAttendees,
+  type InsertEvent,
+  type InsertMember,
+  type MealEvent,
+  type Member,
+} from "@shared/schema";
+import { DbStorage } from "./db";
 
 export interface IStorage {
-  getUser(id: string): Promise<User | undefined>;
-  getUserByUsername(username: string): Promise<User | undefined>;
-  createUser(user: InsertUser): Promise<User>;
+  listMembers(): Promise<Member[]>;
+  createMember(input: InsertMember): Promise<Member>;
+  deleteMember(id: string): Promise<void>;
+  listEvents(): Promise<EventWithAttendees[]>;
+  createEvent(
+    input: InsertEvent,
+    ipAddress: string | null,
+  ): Promise<EventWithAttendees>;
+  deleteEvent(id: string): Promise<void>;
 }
 
 export class MemStorage implements IStorage {
-  private users: Map<string, User>;
+  private members: Map<string, Member>;
+  private events: Map<string, MealEvent>;
+  private attendees: Map<string, Set<string>>;
 
   constructor() {
-    this.users = new Map();
+    this.members = new Map();
+    this.events = new Map();
+    this.attendees = new Map();
   }
 
-  async getUser(id: string): Promise<User | undefined> {
-    return this.users.get(id);
+  async listMembers(): Promise<Member[]> {
+    return Array.from(this.members.values());
   }
 
-  async getUserByUsername(username: string): Promise<User | undefined> {
-    return Array.from(this.users.values()).find(
-      (user) => user.username === username,
+  async createMember(input: InsertMember): Promise<Member> {
+    const existing = Array.from(this.members.values()).find(
+      (member) => member.name === input.name,
     );
+    if (existing) {
+      throw new Error("Member already exists.");
+    }
+
+    const id = randomUUID();
+    const member: Member = {
+      id,
+      name: input.name,
+      active: true,
+      createdAt: new Date(),
+    };
+    this.members.set(id, member);
+    return member;
   }
 
-  async createUser(insertUser: InsertUser): Promise<User> {
+  async deleteMember(id: string): Promise<void> {
+    this.members.delete(id);
+    for (const attendeeSet of this.attendees.values()) {
+      attendeeSet.delete(id);
+    }
+  }
+
+  async listEvents(): Promise<EventWithAttendees[]> {
+    const events = Array.from(this.events.values()).sort((a, b) => {
+      return b.createdAt.getTime() - a.createdAt.getTime();
+    });
+    return events.map((event) => ({
+      ...event,
+      attendees: Array.from(this.attendees.get(event.id) ?? []),
+    }));
+  }
+
+  async createEvent(
+    input: InsertEvent,
+    ipAddress: string | null,
+  ): Promise<EventWithAttendees> {
     const id = randomUUID();
-    const user: User = { ...insertUser, id };
-    this.users.set(id, user);
-    return user;
+    const event: MealEvent = {
+      id,
+      date: input.date,
+      location: input.location,
+      description: input.description ?? "",
+      points: input.points,
+      createdAt: new Date(),
+      ipAddress,
+    };
+    this.events.set(id, event);
+    this.attendees.set(id, new Set(input.attendees));
+    return {
+      ...event,
+      attendees: Array.from(this.attendees.get(id) ?? []),
+    };
+  }
+
+  async deleteEvent(id: string): Promise<void> {
+    this.events.delete(id);
+    this.attendees.delete(id);
   }
 }
 
-export const storage = new MemStorage();
+export const storage: IStorage = process.env.DATABASE_URL
+  ? new DbStorage()
+  : new MemStorage();
