@@ -96,7 +96,7 @@ Outbound internet access is required for IP geolocation lookups.
 5. View “记录” to see history, submission time, and IP location.
 6. Deactivate a member from “成员” (they will no longer appear in “记分”).
 
-## Docker Deployment (Amazon EC2 / t3.medium)
+## Docker Deployment 
 Create a `.env` file (copy from `.env.example`) and set:
 - `POSTGRES_USER`
 - `POSTGRES_PASSWORD`
