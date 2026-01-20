@@ -1,7 +1,16 @@
 import { useEffect, useMemo, useState } from "react";
 import { useStore } from "@/lib/store";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, Cell } from 'recharts';
+import {
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  Tooltip,
+  ResponsiveContainer,
+  Cell,
+  LabelList,
+} from "recharts";
 import { Trophy, Calendar } from "lucide-react";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
@@ -54,7 +63,14 @@ export default function Stats() {
     }).sort((a, b) => b.points - a.points);
   }, [members, filteredEvents]);
 
-  const topMembers = memberPoints.slice(0, 10);
+  const topMembers = memberPoints.slice(0, 5);
+  const chartColors = [
+    "hsl(199 89% 48%)",
+    "hsl(160 84% 39%)",
+    "hsl(43 96% 56%)",
+    "hsl(0 84% 60%)",
+    "hsl(217 91% 60%)",
+  ];
 
   return (
     <div className="space-y-6 animate-in fade-in duration-500 pb-20">
@@ -78,29 +94,32 @@ export default function Stats() {
       <Card>
         <CardHeader>
           <CardTitle className="text-sm font-medium text-muted-foreground">
-            {selectedYear}年 积分排行榜 (Top 10)
+            {selectedYear}年 积分排行榜 (Top 5)
           </CardTitle>
         </CardHeader>
-        <CardContent className="h-[250px] w-full">
+        <CardContent className="h-[220px] w-full">
           <ResponsiveContainer width="100%" height="100%">
-            <BarChart data={topMembers} layout="vertical" margin={{ left: 20, right: 20 }}>
+            <BarChart data={topMembers} layout="vertical" margin={{ left: 20, right: 28 }}>
               <XAxis type="number" hide />
               <YAxis 
                 type="category" 
                 dataKey="name" 
-                width={60} 
-                tick={{ fontSize: 12 }} 
+                width={80} 
+                tick={{ fontSize: 12, fill: "hsl(var(--foreground))" }} 
+                tickMargin={8}
                 axisLine={false}
                 tickLine={false}
+                interval={0}
               />
               <Tooltip 
                 cursor={{ fill: 'transparent' }}
                 contentStyle={{ borderRadius: '8px', border: 'none', boxShadow: '0 4px 12px rgba(0,0,0,0.1)' }}
               />
-              <Bar dataKey="points" radius={[0, 4, 4, 0]} barSize={20}>
+              <Bar dataKey="points" radius={[0, 8, 8, 0]} barSize={18}>
                 {topMembers.map((entry, index) => (
-                  <Cell key={`cell-${index}`} fill={index < 3 ? 'hsl(var(--primary))' : 'hsl(var(--muted-foreground))'} />
+                  <Cell key={`cell-${index}`} fill={chartColors[index % chartColors.length]} />
                 ))}
+                <LabelList dataKey="points" position="right" fill="hsl(var(--foreground))" fontSize={12} />
               </Bar>
             </BarChart>
           </ResponsiveContainer>
