@@ -149,11 +149,9 @@ export const useStore = create<AppState>((set, get) => ({
   deleteMember: async (id) => {
     await apiRequest("DELETE", `/api/members/${id}`);
     set((state) => ({
-      members: state.members.filter((member) => member.id !== id),
-      events: state.events.map((event) => ({
-        ...event,
-        attendees: event.attendees.filter((attendee) => attendee !== id),
-      })),
+      members: state.members.map((member) =>
+        member.id === id ? { ...member, active: false } : member,
+      ),
     }));
   },
 

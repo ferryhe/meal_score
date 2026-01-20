@@ -22,8 +22,8 @@ export default function Entry() {
   const { toast } = useToast();
   const [, setLocationPath] = useLocation();
 
-  const filteredMembers = members.filter(m => 
-    m.name.toLowerCase().includes(search.toLowerCase())
+  const filteredMembers = members.filter(m =>
+    m.active && m.name.toLowerCase().includes(search.toLowerCase())
   );
 
   const count = selectedIds.size;

@@ -44,12 +44,10 @@ export class DbStorage implements IStorage {
   }
 
   async deleteMember(id: string): Promise<void> {
-    await this.db.transaction(async (tx) => {
-      await tx
-        .delete(schema.eventAttendees)
-        .where(eq(schema.eventAttendees.memberId, id));
-      await tx.delete(schema.members).where(eq(schema.members.id, id));
-    });
+    await this.db
+      .update(schema.members)
+      .set({ active: false })
+      .where(eq(schema.members.id, id));
   }
 
   async listEvents(): Promise<schema.EventWithAttendees[]> {

@@ -4,6 +4,7 @@ import { Search, UserPlus, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
 import {
   Dialog,
   DialogContent,
@@ -20,9 +21,10 @@ export default function Members() {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const { toast } = useToast();
 
-  const filteredMembers = members.filter(m => 
-    m.name.toLowerCase().includes(search.toLowerCase())
-  );
+  const filteredMembers = members
+    .filter(m => m.name.toLowerCase().includes(search.toLowerCase()))
+    .sort((a, b) => Number(b.active) - Number(a.active));
+  const activeCount = members.filter((member) => member.active).length;
 
   const handleAddMember = async () => {
     if (!newMemberName.trim()) return;
@@ -42,16 +44,16 @@ export default function Members() {
   };
 
   const handleDelete = async (id: string, name: string) => {
-    if (confirm(`确定要删除 ${name} 吗?`)) {
+    if (confirm(`确定要停用 ${name} 吗?`)) {
       try {
         await deleteMember(id);
         toast({
-          title: "删除成功",
-          description: `已删除成员: ${name}`,
+          title: "已停用成员",
+          description: `已停用成员: ${name}`,
         });
       } catch (error) {
         console.error("Failed to delete member.", error);
-        toast({ title: "删除失败，请稍后重试", variant: "destructive" });
+        toast({ title: "停用失败，请稍后重试", variant: "destructive" });
       }
     }
   };
@@ -59,7 +61,7 @@ export default function Members() {
   return (
     <div className="space-y-6 animate-in fade-in duration-500">
       <div className="flex items-center justify-between">
-        <h2 className="text-2xl font-bold font-heading text-foreground">群成员 ({members.length})</h2>
+        <h2 className="text-2xl font-bold font-heading text-foreground">群成员 ({activeCount})</h2>
         <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
           <DialogTrigger asChild>
             <Button size="sm" className="gap-2">
@@ -97,15 +99,20 @@ export default function Members() {
       <div className="grid grid-cols-1 gap-3">
         {filteredMembers.map((member) => (
           <Card key={member.id} className="flex items-center justify-between p-4 hover:shadow-md transition-shadow">
-            <span className="font-medium text-lg">{member.name}</span>
-            <Button 
-              variant="ghost" 
-              size="icon" 
-              className="text-muted-foreground hover:text-destructive"
-              onClick={() => handleDelete(member.id, member.name)}
-            >
-              <Trash2 className="h-4 w-4" />
-            </Button>
+            <div className="flex items-center gap-2">
+              <span className="font-medium text-lg">{member.name}</span>
+              {!member.active && <Badge variant="secondary">已停用</Badge>}
+            </div>
+            {member.active && (
+              <Button
+                variant="ghost"
+                size="icon"
+                className="text-muted-foreground hover:text-destructive"
+                onClick={() => handleDelete(member.id, member.name)}
+              >
+                <Trash2 className="h-4 w-4" />
+              </Button>
+            )}
           </Card>
         ))}
         {filteredMembers.length === 0 && (

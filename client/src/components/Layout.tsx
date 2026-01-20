@@ -6,10 +6,10 @@ export default function Layout({ children }: { children: React.ReactNode }) {
   const [location] = useLocation();
 
   const navItems = [
-    { href: "/members", icon: Users, label: "成员" },
     { href: "/", icon: PlusCircle, label: "记分" }, // Default to Entry as it's the main action
     { href: "/stats", icon: BarChart3, label: "统计" },
     { href: "/history", icon: History, label: "记录" },
+    { href: "/members", icon: Users, label: "成员" },
   ];
 
   return (
