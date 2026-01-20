@@ -6,7 +6,7 @@ history log, and see yearly leaderboards. When `DATABASE_URL` is configured,
 data is stored in Postgres so multiple devices stay in sync.
 
 ## Features
-- Member management (add/delete, search).
+- Member management (add/deactivate, search).
 - Event entry with date, location, description, and attendee selection.
 - Automatic point rules with optional manual override.
 - Yearly stats with leaderboard and per-member totals.
@@ -33,7 +33,7 @@ data is stored in Postgres so multiple devices stay in sync.
 Member
 - `id`: string
 - `name`: string
-- `active`: boolean (currently not used in UI)
+- `active`: boolean (inactive members are hidden from the entry screen)
 
 DinnerEvent
 - `id`: string
@@ -110,3 +110,4 @@ network and proxy to the service name.
 
 ## Limitations
 - No authentication is implemented.
+- Members are deactivated instead of permanently deleted.
