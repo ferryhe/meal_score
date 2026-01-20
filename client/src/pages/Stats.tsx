@@ -11,20 +11,18 @@ import {
   Cell,
   LabelList,
 } from "recharts";
-import { Trophy, Calendar } from "lucide-react";
+import { Trophy, Calendar, Zap } from "lucide-react";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
 export default function Stats() {
   const { members, events } = useStore();
   
-  // Get all available years from events
   const years = useMemo(() => {
     const yearsSet = new Set<string>();
     events.forEach(event => {
       const year = new Date(event.date).getFullYear().toString();
       yearsSet.add(year);
     });
-    // Add current year if no events
     if (yearsSet.size === 0) {
       yearsSet.add(new Date().getFullYear().toString());
     }
@@ -39,12 +37,10 @@ export default function Stats() {
     }
   }, [years, selectedYear]);
 
-  // Filter events by selected year
   const filteredEvents = useMemo(() => {
     return events.filter(event => new Date(event.date).getFullYear().toString() === selectedYear);
   }, [events, selectedYear]);
 
-  // Calculate points per member for the selected year
   const memberPoints = useMemo(() => {
     return members.map(member => {
       const totalPoints = filteredEvents.reduce((sum, event) => {
@@ -65,96 +61,115 @@ export default function Stats() {
 
   const topMembers = memberPoints.slice(0, 5);
   const chartColors = [
-    "hsl(199 89% 48%)",
-    "hsl(160 84% 39%)",
-    "hsl(43 96% 56%)",
-    "hsl(0 84% 60%)",
-    "hsl(217 91% 60%)",
+    "hsl(221 83% 53%)",
+    "hsl(221 83% 63%)",
+    "hsl(221 83% 73%)",
+    "hsl(221 83% 83%)",
+    "hsl(221 83% 93%)",
   ];
 
   return (
-    <div className="space-y-6 animate-in fade-in duration-500 pb-20">
-      <div className="flex items-center justify-between">
-        <h2 className="text-2xl font-bold font-heading">积分统计</h2>
-        <div className="flex items-center gap-2">
-          <Calendar className="h-4 w-4 text-muted-foreground" />
+    <div className="space-y-8 animate-in fade-in duration-700 pb-20">
+      <div className="flex items-center justify-between px-1">
+        <h2 className="text-3xl font-black font-heading tracking-tighter uppercase italic">
+          数据 <span className="text-primary/40 not-italic">STATS</span>
+        </h2>
+        <div className="flex items-center gap-2 glass px-3 py-1.5 rounded-2xl shadow-sm border-none">
+          <Calendar className="h-3 w-3 text-primary" />
           <Select value={selectedYear} onValueChange={setSelectedYear}>
-            <SelectTrigger className="w-[100px] h-9">
-              <SelectValue placeholder="年份" />
+            <SelectTrigger className="w-[80px] h-6 border-none bg-transparent font-black text-[10px] p-0 focus:ring-0 uppercase tracking-widest">
+              <SelectValue />
             </SelectTrigger>
-            <SelectContent>
+            <SelectContent className="glass border-none rounded-2xl">
               {years.map(year => (
-                <SelectItem key={year} value={year}>{year}年</SelectItem>
+                <SelectItem key={year} value={year} className="text-[10px] font-black uppercase">{year} YEAR</SelectItem>
               ))}
             </SelectContent>
           </Select>
         </div>
       </div>
 
-      <Card>
-        <CardHeader>
-          <CardTitle className="text-sm font-medium text-muted-foreground">
-            {selectedYear}年 积分排行榜 (Top 5)
-          </CardTitle>
+      <Card className="border-none shadow-soft rounded-[2rem] overflow-hidden bg-white">
+        <CardHeader className="pb-2 pt-8 px-8">
+          <div className="flex items-center gap-2">
+            <Zap className="w-4 h-4 text-primary fill-primary" />
+            <CardTitle className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground">
+              {selectedYear} TOP LEADERS
+            </CardTitle>
+          </div>
         </CardHeader>
-        <CardContent className="h-[220px] w-full">
+        <CardContent className="h-[240px] w-full p-6 pt-0">
           <ResponsiveContainer width="100%" height="100%">
-            <BarChart data={topMembers} layout="vertical" margin={{ left: 20, right: 28 }}>
+            <BarChart data={topMembers} layout="vertical" margin={{ left: 10, right: 35, top: 10, bottom: 10 }}>
               <XAxis type="number" hide />
               <YAxis 
                 type="category" 
                 dataKey="name" 
-                width={80} 
-                tick={{ fontSize: 12, fill: "hsl(var(--foreground))" }} 
-                tickMargin={8}
+                width={70} 
+                tick={{ fontSize: 11, fontWeight: 900, fill: "hsl(var(--foreground))" }} 
                 axisLine={false}
                 tickLine={false}
-                interval={0}
               />
-              <Tooltip 
-                cursor={{ fill: 'transparent' }}
-                contentStyle={{ borderRadius: '8px', border: 'none', boxShadow: '0 4px 12px rgba(0,0,0,0.1)' }}
-              />
-              <Bar dataKey="points" radius={[0, 8, 8, 0]} barSize={18}>
+              <Bar dataKey="points" radius={[0, 10, 10, 0]} barSize={24}>
                 {topMembers.map((entry, index) => (
-                  <Cell key={`cell-${index}`} fill={chartColors[index % chartColors.length]} />
+                  <Cell key={`cell-${index}`} fill={chartColors[index]} />
                 ))}
-                <LabelList dataKey="points" position="right" fill="hsl(var(--foreground))" fontSize={12} />
+                <LabelList dataKey="points" position="right" fill="hsl(var(--primary))" fontSize={14} fontWeight={900} offset={12} />
               </Bar>
             </BarChart>
           </ResponsiveContainer>
         </CardContent>
       </Card>
 
-      <div className="space-y-4">
-        <h3 className="font-semibold text-lg px-2">{selectedYear}年 全员明细</h3>
-        <div className="grid gap-3">
+      <div className="space-y-4 pt-2">
+        <div className="flex items-center justify-between px-1">
+          <h3 className="font-black text-xl font-heading tracking-tight uppercase">
+            全员明细 <span className="text-primary/20 text-sm">/ ALL MEMBERS</span>
+          </h3>
+        </div>
+        <div className="grid gap-4">
           {memberPoints.map((member, index) => (
             <div 
               key={member.id} 
-              className="flex items-center justify-between p-4 bg-card rounded-xl border border-border shadow-sm"
+              className="group relative flex items-center justify-between p-5 bg-white rounded-3xl border-none shadow-sm hover:shadow-soft transition-all duration-300 overflow-hidden"
             >
-              <div className="flex items-center gap-4">
-                <div className="flex items-center justify-center w-8 h-8 rounded-full bg-secondary text-secondary-foreground font-bold text-sm">
+              {index < 3 && (
+                <div className="absolute top-0 right-0 p-2 opacity-5 group-hover:opacity-20 transition-opacity">
+                   <Trophy className="w-16 h-16 -rotate-12" />
+                </div>
+              )}
+              <div className="flex items-center gap-5 relative z-10">
+                <div className={cn(
+                  "flex items-center justify-center w-12 h-12 rounded-2xl font-black text-lg shadow-inner",
+                  index === 0 ? "bg-primary text-white" : "bg-secondary text-secondary-foreground"
+                )}>
                   {index + 1}
                 </div>
                 <div>
-                  <div className="font-semibold">{member.name}</div>
-                  <div className="text-xs text-muted-foreground">参与 {member.events} 次聚餐</div>
+                  <div className="font-black text-lg tracking-tight uppercase">{member.name}</div>
+                  <div className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest mt-0.5">
+                    {member.events} DINNERS COMPLETED
+                  </div>
                 </div>
               </div>
-              <div className="flex items-center gap-2">
-                {index < 3 && member.points > 0 && <Trophy className={`w-4 h-4 ${index === 0 ? 'text-yellow-500' : index === 1 ? 'text-gray-400' : 'text-amber-700'}`} />}
-                <span className="text-xl font-bold font-heading text-primary">{member.points}</span>
-                <span className="text-xs text-muted-foreground pt-1">分</span>
+              <div className="flex flex-col items-end relative z-10">
+                <div className="flex items-baseline gap-1">
+                  <span className="text-2xl font-black font-heading text-primary">{member.points}</span>
+                  <span className="text-[10px] font-black text-muted-foreground uppercase tracking-tighter">PTS</span>
+                </div>
+                {index < 3 && member.points > 0 && (
+                   <div className={cn(
+                     "text-[9px] font-black px-2 py-0.5 rounded-full mt-1 uppercase tracking-tighter",
+                     index === 0 ? "bg-yellow-400/20 text-yellow-600" : 
+                     index === 1 ? "bg-slate-400/20 text-slate-600" : 
+                     "bg-orange-400/20 text-orange-600"
+                   )}>
+                     Top {index + 1}
+                   </div>
+                )}
               </div>
             </div>
           ))}
-          {memberPoints.length === 0 && (
-            <div className="text-center py-10 text-muted-foreground">
-              该年份暂无聚餐记录
-            </div>
-          )}
         </div>
       </div>
     </div>
