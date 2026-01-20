@@ -13,47 +13,33 @@ export default function Layout({ children }: { children: React.ReactNode }) {
   ];
 
   return (
-    <div className="flex flex-col h-screen bg-background max-w-md mx-auto shadow-[0_0_50px_rgba(0,0,0,0.1)] overflow-hidden border-x border-border relative noise">
+    <div className="flex flex-col h-screen bg-[#f8fafc] max-w-md mx-auto shadow-sm overflow-hidden border-x border-slate-200">
       {/* Header */}
-      <header className="bg-primary px-6 py-6 text-primary-foreground relative overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-br from-white/10 to-transparent" />
-        <div className="relative z-10">
-          <h1 className="text-2xl font-heading font-black tracking-tighter uppercase italic">
-            牛肉面群 <span className="text-white/80 not-italic font-medium">积分助手</span>
-          </h1>
-          <p className="text-[10px] text-white/60 font-medium tracking-widest mt-0.5 uppercase">Beef Noodle Community Hub</p>
-        </div>
-        {/* Abstract decor */}
-        <div className="absolute -right-4 -bottom-4 w-24 h-24 bg-white/5 rounded-full blur-2xl" />
+      <header className="bg-white px-6 py-5 border-b border-slate-100 sticky top-0 z-20">
+        <h1 className="text-xl font-bold text-slate-900 tracking-tight text-center">
+          牛肉面群积分助手
+        </h1>
       </header>
 
       {/* Main Content */}
-      <main className="flex-1 overflow-y-auto p-5 pb-32">
+      <main className="flex-1 overflow-y-auto p-4 pb-24">
         {children}
       </main>
 
       {/* Bottom Navigation */}
-      <nav className="fixed bottom-0 left-0 right-0 max-w-md mx-auto glass border-t border-border/50 px-6 py-3 shadow-soft z-30 rounded-t-3xl">
-        <ul className="flex justify-between items-center px-2">
+      <nav className="fixed bottom-0 left-0 right-0 max-w-md mx-auto bg-white/80 backdrop-blur-lg border-t border-slate-100 px-6 py-2 pb-safe z-30 shadow-lg">
+        <ul className="flex justify-between items-center">
           {navItems.map((item) => {
             const isActive = location === item.href;
             return (
               <li key={item.href}>
                 <Link href={item.href}>
                   <a className={cn(
-                    "flex flex-col items-center justify-center transition-all duration-300 relative group",
-                    isActive ? "text-primary" : "text-muted-foreground hover:text-foreground"
+                    "flex flex-col items-center justify-center p-2 rounded-xl transition-all duration-200",
+                    isActive ? "text-blue-600" : "text-slate-400 hover:text-slate-600"
                   )}>
-                    <div className={cn(
-                      "p-2 rounded-xl transition-all duration-300",
-                      isActive ? "bg-primary/10 shadow-inner" : "group-hover:bg-muted/50"
-                    )}>
-                      <item.icon className={cn("h-6 w-6", isActive && "stroke-[2.5px] animate-pulse-slow")} />
-                    </div>
-                    <span className={cn(
-                      "text-[10px] mt-1 font-bold tracking-tight uppercase transition-opacity duration-300",
-                      isActive ? "opacity-100" : "opacity-60"
-                    )}>{item.label}</span>
+                    <item.icon className={cn("h-6 w-6 mb-1", isActive && "stroke-[2.5px]")} />
+                    <span className="text-[11px] font-medium">{item.label}</span>
                   </a>
                 </Link>
               </li>

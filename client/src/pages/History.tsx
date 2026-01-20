@@ -1,11 +1,10 @@
 import { useEffect, useState } from "react";
 import { useStore } from "@/lib/store";
 import { format } from "date-fns";
-import { MapPin, Users, Trash2, Globe, Clock, Hash } from "lucide-react";
+import { MapPin, Users, Trash2, Globe, Clock } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
-import { cn } from "@/lib/utils";
 
 export default function History() {
   const { events, members, deleteEvent } = useStore();
@@ -60,80 +59,70 @@ export default function History() {
   };
 
   return (
-    <div className="space-y-8 animate-in fade-in duration-700">
-      <h2 className="text-3xl font-black font-heading tracking-tighter uppercase italic px-1">
-        日志 <span className="text-primary/40 not-italic">LOGS</span>
-      </h2>
+    <div className="space-y-6 animate-in fade-in duration-500 pb-20">
+      <h2 className="text-xl font-bold text-slate-900 px-1">历史记录</h2>
 
-      <div className="space-y-6">
+      <div className="space-y-4">
         {events.length === 0 ? (
-          <div className="text-center py-24 glass rounded-[2rem] border-none shadow-soft">
-            <History className="h-12 w-12 mx-auto text-muted-foreground/20 mb-4" />
-            <p className="font-black uppercase tracking-widest text-[10px] text-muted-foreground">暂无聚餐记录</p>
+          <div className="text-center py-20 bg-white rounded-2xl border border-slate-100 shadow-sm">
+            <p className="text-sm font-medium text-slate-400">暂无聚餐记录</p>
           </div>
         ) : (
-          events.map((event, idx) => {
+          events.map((event) => {
             const createdAtText = event.createdAt
               ? format(new Date(event.createdAt), "MM-dd HH:mm")
               : "未知";
-            const ipLocation = event.ipAddress ? ipLocations[event.ipAddress] ?? "LOCATING..." : "UNKNOWN";
+            const ipLocation = event.ipAddress ? ipLocations[event.ipAddress] ?? "查询中..." : "未知";
 
             return (
-              <Card key={event.id} className="border-none shadow-soft rounded-[2.5rem] overflow-hidden bg-white relative group">
-                <div className="absolute top-0 right-0 p-8 opacity-5">
-                   <Hash className="w-24 h-24 rotate-12" />
-                </div>
-                
-                <CardHeader className="p-7 pb-0 relative z-10">
+              <Card key={event.id} className="border-slate-100 shadow-sm rounded-2xl overflow-hidden bg-white">
+                <CardHeader className="bg-slate-50/50 p-5 border-b border-slate-50">
                   <div className="flex justify-between items-start">
-                    <div className="space-y-1.5">
-                      <div className="flex items-center gap-2">
-                         <div className="w-2 h-2 rounded-full bg-primary" />
-                         <h3 className="font-black text-2xl font-heading tracking-tighter uppercase leading-none">
-                          {format(new Date(event.date), "MM/dd")}
-                        </h3>
-                      </div>
-                      <p className="text-[10px] font-black text-muted-foreground flex items-center gap-1.5 uppercase tracking-widest pl-4">
-                        <MapPin className="h-2.5 w-2.5" /> {event.location}
+                    <div className="space-y-1">
+                      <h3 className="font-bold text-slate-900 leading-none">
+                        {format(new Date(event.date), "yyyy年MM月dd日")}
+                      </h3>
+                      <p className="text-[11px] font-medium text-slate-500 flex items-center gap-1 mt-1">
+                        <MapPin className="h-3 w-3 text-slate-400" /> {event.location}
                       </p>
                     </div>
                     <div className="text-right">
-                      <div className="text-3xl font-black font-heading text-primary leading-none">+{event.points}</div>
-                      <div className="text-[10px] font-black text-muted-foreground uppercase tracking-widest mt-1">PTS / PERSON</div>
+                      <div className="text-xl font-bold text-blue-600 leading-none">+{event.points}</div>
+                      <div className="text-[10px] font-bold text-slate-400 mt-1 uppercase">人均积分</div>
                     </div>
                   </div>
                 </CardHeader>
 
-                <CardContent className="p-7 pt-5 relative z-10">
-                  <div className="mb-6 text-sm font-bold text-foreground/70 bg-secondary/30 p-4 rounded-2xl italic border-l-4 border-primary">
-                    "{event.description}"
+                <CardContent className="p-5 space-y-4">
+                  <div className="text-sm font-medium text-slate-600 bg-slate-50 p-3 rounded-xl">
+                    {event.description}
                   </div>
 
-                  <div className="grid grid-cols-2 gap-4 mb-6">
-                    <div className="glass p-3 rounded-2xl shadow-sm border-none">
-                      <div className="text-[9px] font-black text-muted-foreground uppercase tracking-widest flex items-center gap-1.5 mb-1">
+                  <div className="grid grid-cols-2 gap-3">
+                    <div className="bg-slate-50/50 p-2.5 rounded-xl border border-slate-100">
+                      <div className="text-[9px] font-bold text-slate-400 flex items-center gap-1 mb-0.5 uppercase">
                         <Clock className="h-2.5 w-2.5" /> 提交时间
                       </div>
-                      <div className="text-[11px] font-black text-primary uppercase">{createdAtText}</div>
+                      <div className="text-[11px] font-bold text-slate-700">{createdAtText}</div>
                     </div>
-                    <div className="glass p-3 rounded-2xl shadow-sm border-none">
-                      <div className="text-[9px] font-black text-muted-foreground uppercase tracking-widest flex items-center gap-1.5 mb-1">
-                        <Globe className="h-2.5 w-2.5" /> 网络归属
+                    <div className="bg-slate-50/50 p-2.5 rounded-xl border border-slate-100">
+                      <div className="text-[9px] font-bold text-slate-400 flex items-center gap-1 mb-0.5 uppercase">
+                        <Globe className="h-2.5 w-2.5" /> 归属地
                       </div>
-                      <div className="text-[11px] font-black text-primary uppercase truncate">{ipLocation}</div>
+                      <div className="text-[11px] font-bold text-slate-700 truncate">{ipLocation}</div>
                     </div>
                   </div>
 
-                  <div className="space-y-3">
-                    <div className="flex items-center gap-2 text-[10px] font-black text-muted-foreground uppercase tracking-[0.2em]">
-                      <Users className="h-2.5 w-2.5" />
+                  <div className="space-y-2">
+                    <div className="flex items-center gap-1.5 text-[10px] font-bold text-slate-400 uppercase">
+                      <Users className="h-3 w-3" />
                       参与名单 ({event.attendees.length}人)
                     </div>
                     <div className="flex flex-wrap gap-1.5">
                       {event.attendees.map(id => {
                         const name = members.find(m => m.id === id)?.name;
                         return name && (
-                          <span key={id} className="text-[10px] font-black bg-secondary px-3 py-1 rounded-full uppercase tracking-tight">
+                          <span key={id} className="text-[11px] font-medium bg-slate-100 text-slate-600 px-2.5 py-1 rounded-lg">
                             {name}
                           </span>
                         );
@@ -141,14 +130,14 @@ export default function History() {
                     </div>
                   </div>
 
-                  <div className="mt-8 pt-6 border-t border-dashed flex justify-end">
+                  <div className="pt-4 border-t border-slate-50 flex justify-end">
                      <Button
                       variant="ghost"
                       size="sm"
-                      className="text-muted-foreground hover:text-destructive hover:bg-destructive/10 h-10 px-4 rounded-2xl font-black text-[10px] uppercase tracking-widest"
+                      className="text-slate-400 hover:text-red-500 hover:bg-red-50 h-8 px-3 rounded-lg text-xs font-bold"
                       onClick={() => handleDelete(event.id)}
                     >
-                      <Trash2 className="h-3.5 w-3.5 mr-1.5" /> 删除该记录
+                      <Trash2 className="h-3.5 w-3.5 mr-1" /> 删除记录
                     </Button>
                   </div>
                 </CardContent>

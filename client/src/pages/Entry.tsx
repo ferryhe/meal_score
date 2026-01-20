@@ -1,6 +1,6 @@
 import { useState, useMemo } from "react";
 import { useStore } from "@/lib/store";
-import { Calendar as CalendarIcon, MapPin, Search, Users as UsersIcon } from "lucide-react";
+import { Calendar as CalendarIcon, MapPin, Search } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -79,70 +79,64 @@ export default function Entry() {
   };
 
   return (
-    <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-700">
+    <div className="space-y-6 pb-24 animate-in fade-in duration-500">
       <div className="space-y-4">
-        <h2 className="text-3xl font-black font-heading tracking-tighter text-foreground">发布 <span className="text-primary/40">ENTRY</span></h2>
+        <h2 className="text-lg font-bold text-slate-900">填写聚餐记录</h2>
         
-        <Card className="p-6 space-y-5 bg-white shadow-soft border-none rounded-2xl relative overflow-hidden">
-          <div className="absolute top-0 right-0 w-32 h-32 bg-primary/5 rounded-full -mr-16 -mt-16" />
-          
-          <div className="grid grid-cols-2 gap-4 relative z-10">
-            <div className="space-y-1.5">
-              <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground flex items-center gap-1.5 ml-1">
-                <CalendarIcon className="h-3 w-3" /> 日期
+        <Card className="p-5 space-y-4 border-slate-100 shadow-sm rounded-2xl">
+          <div className="grid grid-cols-2 gap-4">
+            <div className="space-y-2">
+              <label className="text-xs font-medium text-slate-500 flex items-center gap-1.5">
+                <CalendarIcon className="h-3.5 w-3.5 text-slate-400" /> 日期
               </label>
               <Input 
                 type="date" 
                 value={date} 
                 onChange={(e) => setDate(e.target.value)}
-                className="bg-secondary/50 border-none rounded-xl h-12 font-medium"
+                className="h-10 bg-slate-50 border-slate-100 rounded-xl"
               />
             </div>
-            <div className="space-y-1.5">
-              <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground flex items-center gap-1.5 ml-1">
-                <MapPin className="h-3 w-3" /> 地点
+            <div className="space-y-2">
+              <label className="text-xs font-medium text-slate-500 flex items-center gap-1.5">
+                <MapPin className="h-3.5 w-3.5 text-slate-400" /> 地点
               </label>
               <Input 
-                placeholder="地点..." 
+                placeholder="例如: 牛肉面馆" 
                 value={location} 
                 onChange={(e) => setLocation(e.target.value)}
-                className="bg-secondary/50 border-none rounded-xl h-12 font-medium"
+                className="h-10 bg-slate-50 border-slate-100 rounded-xl"
               />
             </div>
           </div>
-          <div className="relative z-10 space-y-1.5">
-            <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">备注说明</label>
-            <Textarea 
-              placeholder="添加一些细节描述..." 
-              className="bg-secondary/50 border-none rounded-xl resize-none min-h-[80px] p-3 font-medium" 
-              value={description}
-              onChange={(e) => setDescription(e.target.value)}
-            />
+          <div className="space-y-2">
+             <label className="text-xs font-medium text-slate-500">备注</label>
+             <Textarea 
+                placeholder="备注说明..." 
+                className="bg-slate-50 border-slate-100 rounded-xl resize-none min-h-[80px]" 
+                value={description}
+                onChange={(e) => setDescription(e.target.value)}
+              />
           </div>
         </Card>
       </div>
 
       <div className="space-y-4">
-        <div className="flex items-center justify-between px-1">
-          <h3 className="font-black text-xl font-heading tracking-tight flex items-center gap-2">
-            人员选择 <span className="text-primary/20 text-sm font-bold">/ ATTENDEES</span>
-          </h3>
-          <Badge className="bg-primary/10 text-primary border-none font-black px-3 py-1 rounded-full">
-            {count}
-          </Badge>
+        <div className="flex items-center justify-between">
+          <h3 className="font-bold text-slate-900">选择人员 ({count})</h3>
+          {count > 0 && <Badge variant="secondary" className="bg-blue-50 text-blue-600 border-none font-bold">已选: {count}</Badge>}
         </div>
         
-        <div className="relative group">
-          <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground transition-colors group-focus-within:text-primary" />
+        <div className="relative">
+          <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
           <Input 
-            className="pl-11 bg-white border-none h-14 rounded-2xl shadow-sm focus-visible:ring-primary/20 font-medium" 
-            placeholder="快速检索姓名..." 
+            className="pl-10 h-12 bg-white border-slate-200 rounded-xl shadow-sm focus:ring-blue-500" 
+            placeholder="搜索姓名..." 
             value={search}
             onChange={(e) => setSearch(e.target.value)}
           />
         </div>
 
-        <div className="grid grid-cols-3 gap-3 sm:grid-cols-4 pt-2">
+        <div className="grid grid-cols-3 gap-2.5 sm:grid-cols-4">
           {filteredMembers.map((member) => {
             const isSelected = selectedIds.has(member.id);
             return (
@@ -150,10 +144,10 @@ export default function Entry() {
                 key={member.id}
                 onClick={() => toggleSelection(member.id)}
                 className={cn(
-                  "h-14 px-2 text-xs font-black rounded-2xl border-2 transition-all duration-300 flex items-center justify-center text-center leading-tight uppercase tracking-tight overflow-hidden",
+                  "px-3 py-2.5 text-sm font-medium rounded-xl border transition-all duration-200 text-center truncate",
                   isSelected 
-                    ? "bg-primary text-primary-foreground border-primary shadow-lg shadow-primary/20 scale-[1.05] z-10" 
-                    : "bg-white hover:bg-secondary text-foreground border-transparent shadow-sm"
+                    ? "bg-blue-600 text-white border-blue-600 shadow-md shadow-blue-100 scale-[1.02]" 
+                    : "bg-white hover:bg-slate-50 text-slate-700 border-slate-200"
                 )}
               >
                 {member.name}
@@ -163,20 +157,15 @@ export default function Entry() {
         </div>
       </div>
 
-      {/* Sticky Bottom Actions */}
-      <div className="fixed bottom-24 left-0 right-0 max-w-md mx-auto px-5 z-40 pointer-events-none">
-        <Card className="glass border-none shadow-soft rounded-[2.5rem] p-4 flex items-center justify-between gap-4 pointer-events-auto ring-1 ring-black/5">
-          <div className="flex flex-col pl-4">
+      {/* Footer Summary */}
+      <div className="fixed bottom-20 left-0 right-0 max-w-md mx-auto px-4 pointer-events-none">
+        <div className="bg-white/95 backdrop-blur-md border border-slate-200 p-4 rounded-[20px] shadow-xl flex items-center justify-between gap-4 pointer-events-auto">
+          <div className="flex flex-col">
+            <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">人均积分</span>
             <div className="flex items-center gap-2">
-              <span className="text-[10px] font-black uppercase tracking-tighter text-muted-foreground">人均积分</span>
-              {manualPoints !== null && (
-                <div className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse" />
-              )}
-            </div>
-            <div className="flex items-end gap-1.5">
               <input 
                 type="number" 
-                className="w-12 bg-transparent text-2xl font-black font-heading outline-none text-primary"
+                className="w-10 bg-transparent text-xl font-bold text-slate-900 outline-none"
                 value={finalPoints}
                 onChange={(e) => {
                   const val = parseInt(e.target.value);
@@ -184,18 +173,17 @@ export default function Entry() {
                   else setManualPoints(null);
                 }}
               />
-              <span className="text-xs font-bold text-muted-foreground pb-1">POINTS</span>
+              <span className="text-xs font-medium text-slate-400">分</span>
             </div>
           </div>
           
           <Button 
-            className="h-16 px-10 rounded-[1.8rem] font-black tracking-tighter text-lg shadow-lg shadow-primary/30 transition-transform active:scale-95" 
-            size="lg" 
+            className="flex-1 h-12 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold shadow-lg shadow-blue-100" 
             onClick={handleSubmit}
           >
-            确认并发布
+            保存记录
           </Button>
-        </Card>
+        </div>
       </div>
     </div>
   );

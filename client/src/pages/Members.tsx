@@ -36,11 +36,11 @@ export default function Members() {
       setNewMemberName("");
       setIsDialogOpen(false);
       toast({
-        title: "SUCCESS",
+        title: "成功",
         description: `已添加成员: ${newMemberName}`,
       });
     } catch (error) {
-      toast({ title: "FAILED", variant: "destructive" });
+      toast({ title: "失败", variant: "destructive" });
     }
   };
 
@@ -48,78 +48,77 @@ export default function Members() {
     if (confirm(`确定要停用 ${name} 吗?`)) {
       try {
         await deleteMember(id);
-        toast({ title: "DONE", description: `已停用成员: ${name}` });
+        toast({ title: "已停用", description: `已停用成员: ${name}` });
       } catch (error) {
-        toast({ title: "ERROR", variant: "destructive" });
+        toast({ title: "错误", variant: "destructive" });
       }
     }
   };
 
   return (
-    <div className="space-y-8 animate-in fade-in duration-700">
+    <div className="space-y-6 animate-in fade-in duration-500 pb-20">
       <div className="flex items-center justify-between px-1">
-        <h2 className="text-3xl font-black font-heading tracking-tighter uppercase italic">
-          成员 <span className="text-primary/40 not-italic">CREW</span>
-          <span className="ml-3 text-xs not-italic bg-primary/10 text-primary px-2 py-1 rounded-full">{activeCount}</span>
+        <h2 className="text-xl font-bold text-slate-900">
+          成员管理 <span className="ml-2 text-sm font-medium text-slate-400">{activeCount}人活跃</span>
         </h2>
         
         <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
           <DialogTrigger asChild>
-            <Button size="icon" className="h-12 w-12 rounded-2xl shadow-lg shadow-primary/20 transition-transform active:scale-90">
-              <UserPlus className="h-5 w-5" />
+            <Button size="sm" className="h-10 rounded-xl bg-blue-600 hover:bg-blue-700 shadow-sm">
+              <UserPlus className="h-4 w-4 mr-1.5" /> 添加
             </Button>
           </DialogTrigger>
-          <DialogContent className="glass border-none rounded-[2.5rem] p-8">
+          <DialogContent className="border-none rounded-2xl p-6">
             <DialogHeader>
-              <DialogTitle className="text-2xl font-black uppercase tracking-tighter">入伙新成员</DialogTitle>
+              <DialogTitle className="text-lg font-bold">添加新成员</DialogTitle>
             </DialogHeader>
-            <div className="space-y-4 mt-6">
+            <div className="space-y-4 mt-4">
               <Input 
                 value={newMemberName} 
                 onChange={(e) => setNewMemberName(e.target.value)}
-                placeholder="成员大名..."
-                className="h-14 bg-secondary/50 border-none rounded-2xl font-bold px-5"
+                placeholder="输入成员姓名..."
+                className="h-12 bg-slate-50 border-slate-100 rounded-xl px-4"
                 onKeyDown={(e) => e.key === 'Enter' && handleAddMember()}
               />
-              <Button onClick={handleAddMember} className="w-full h-14 rounded-2xl font-black text-lg">确认添加</Button>
+              <Button onClick={handleAddMember} className="w-full h-12 rounded-xl font-bold bg-blue-600">确认添加</Button>
             </div>
           </DialogContent>
         </Dialog>
       </div>
 
-      <div className="relative group">
-        <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground group-focus-within:text-primary transition-colors" />
+      <div className="relative">
+        <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
         <Input 
-          className="pl-11 bg-white border-none h-14 rounded-2xl shadow-sm font-medium" 
-          placeholder="查找队友..." 
+          className="pl-10 h-12 bg-white border-slate-200 rounded-xl shadow-sm font-medium" 
+          placeholder="快速查找成员..." 
           value={search}
           onChange={(e) => setSearch(e.target.value)}
         />
       </div>
 
-      <div className="grid grid-cols-1 gap-4">
+      <div className="grid grid-cols-1 gap-3">
         {filteredMembers.map((member) => (
           <Card key={member.id} className={cn(
-            "flex items-center justify-between p-5 border-none shadow-sm hover:shadow-soft transition-all duration-300 rounded-[1.8rem] group overflow-hidden",
-            member.active ? "bg-white" : "bg-white/40 opacity-60"
+            "flex items-center justify-between p-4 border-slate-100 shadow-sm rounded-2xl transition-all",
+            member.active ? "bg-white" : "bg-slate-50/50 opacity-60"
           )}>
-            <div className="flex items-center gap-4">
+            <div className="flex items-center gap-3">
               <div className={cn(
-                "w-12 h-12 rounded-2xl flex items-center justify-center transition-colors",
-                member.active ? "bg-primary/10 text-primary" : "bg-muted text-muted-foreground"
+                "w-10 h-10 rounded-xl flex items-center justify-center",
+                member.active ? "bg-blue-50 text-blue-600" : "bg-slate-100 text-slate-400"
               )}>
                 {member.active ? <UserCheck className="h-5 w-5" /> : <UserMinus className="h-5 w-5" />}
               </div>
               <div>
-                <span className="font-black text-lg tracking-tight uppercase group-hover:text-primary transition-colors">{member.name}</span>
-                {!member.active && <div className="text-[9px] font-black text-muted-foreground uppercase tracking-widest mt-0.5">DISABLED MEMBER</div>}
+                <span className="font-bold text-slate-900 leading-none">{member.name}</span>
+                {!member.active && <p className="text-[10px] font-bold text-slate-400 mt-1">已停用</p>}
               </div>
             </div>
             {member.active && (
               <Button
                 variant="ghost"
                 size="icon"
-                className="text-muted-foreground hover:text-destructive hover:bg-destructive/10 rounded-xl"
+                className="text-slate-400 hover:text-red-500 hover:bg-red-50 rounded-lg h-9 w-9"
                 onClick={() => handleDelete(member.id, member.name)}
               >
                 <Trash2 className="h-4 w-4" />
@@ -128,8 +127,8 @@ export default function Members() {
           </Card>
         ))}
         {filteredMembers.length === 0 && (
-          <div className="text-center py-20 glass rounded-[2rem] border-none">
-            <p className="font-black uppercase tracking-widest text-[10px] text-muted-foreground">查无此人</p>
+          <div className="text-center py-20 bg-white rounded-2xl border border-slate-100 shadow-sm">
+            <p className="text-sm font-medium text-slate-400">查无此人</p>
           </div>
         )}
       </div>
