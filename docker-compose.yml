@@ -1,0 +1,45 @@
+services:
+  app:
+    build:
+      context: .
+      target: runtime
+    environment:
+      PORT: 5000
+      DATABASE_URL: postgresql://meal_score:meal_score@db:5432/meal_score
+    ports:
+      - "5000:5000"
+    depends_on:
+      db:
+        condition: service_healthy
+
+  migrate:
+    build:
+      context: .
+      target: build
+    command: npm run db:push
+    environment:
+      DATABASE_URL: postgresql://meal_score:meal_score@db:5432/meal_score
+    depends_on:
+      db:
+        condition: service_healthy
+    profiles:
+      - tools
+
+  db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: meal_score
+      POSTGRES_PASSWORD: meal_score
+      POSTGRES_DB: meal_score
+    ports:
+      - "5432:5432"
+    volumes:
+      - meal_score_pg:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U meal_score -d meal_score"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+volumes:
+  meal_score_pg:

@@ -85,6 +85,24 @@ Manual override is available (0-20).
 3. Production build: `npm run build`
 4. Start production server: `npm start`
 
+## Docker Deployment (Amazon EC2 / t3.medium)
+1. Start Postgres:
+   `docker compose up -d db`
+2. Run database setup (one-time or when schema changes):
+   `docker compose --profile tools run --rm migrate`
+3. Build and start the app:
+   `docker compose up -d --build app`
+4. Open port `5000` in your security group (or put a reverse proxy in front).
+
+By default the app listens on `http://<server-ip>:5000`.
+
+You can also run the helper script:
+- `bash script/deploy-ec2.sh`
+
+If you already have Caddy running in Docker, add a reverse proxy rule that
+points to `http://<host-ip>:5000`, or attach the app container to Caddy's
+network and proxy to the service name.
+
 ## Customization Tips
 - Seed members: edit `INITIAL_MEMBERS` in `client/src/lib/store.ts`.
 - Scoring rules: update the rules in `client/src/pages/Entry.tsx`.

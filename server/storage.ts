@@ -56,7 +56,7 @@ export class MemStorage implements IStorage {
 
   async deleteMember(id: string): Promise<void> {
     this.members.delete(id);
-    for (const attendeeSet of this.attendees.values()) {
+    for (const attendeeSet of Array.from(this.attendees.values())) {
       attendeeSet.delete(id);
     }
   }
