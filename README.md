@@ -13,6 +13,7 @@ data is stored in Postgres so multiple devices stay in sync.
 - History log with per-event details and deletion.
 - Server-backed persistence with Postgres.
 - Server-side capture of submission time and IP address.
+- IP geolocation lookup for history entries (via `ipapi.co`).
 
 ## Tech Stack
 - React 19 + Vite 7
@@ -78,6 +79,8 @@ Manual override is available (0-20).
 - `DATABASE_URL` PostgreSQL URL used by the server and Drizzle.
 - `REPLIT_INTERNAL_APP_DOMAIN` or `REPLIT_DEV_DOMAIN` Used by the meta images
   plugin to rewrite `og:image` and `twitter:image`.
+
+Outbound internet access is required for IP geolocation lookups.
 
 ## Build and Run
 1. Install dependencies: `npm install`
