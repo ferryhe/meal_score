@@ -88,6 +88,14 @@ Outbound internet access is required for IP geolocation lookups.
 3. Production build: `npm run build`
 4. Start production server: `npm start`
 
+## Step-by-step Usage
+1. Start the backend (`npm run dev`) and open `http://localhost:5000`.
+2. Go to “成员” and add members (or keep the seeded list if enabled).
+3. Go to “记分”, select attendees, fill date/location/description, and save.
+4. View “统计” to see the Top 5 leaderboard and member totals.
+5. View “记录” to see history, submission time, and IP location.
+6. Deactivate a member from “成员” (they will no longer appear in “记分”).
+
 ## Docker Deployment (Amazon EC2 / t3.medium)
 1. Start Postgres:
    `docker compose up -d db`
@@ -105,6 +113,17 @@ You can also run the helper script:
 If you already have Caddy running in Docker, add a reverse proxy rule that
 points to `http://<host-ip>:5000`, or attach the app container to Caddy's
 network and proxy to the service name.
+
+## Deployment Usage (Service Ops)
+- Check running containers: `docker ps`
+- View app logs: `docker compose logs -f app`
+- Restart the app: `docker compose restart app`
+- Stop the app (keep DB): `docker compose stop app`
+- Start the app: `docker compose start app`
+- Update after pulling new code:
+  1) `docker compose build app`
+  2) `docker compose up -d app`
+  3) If schema changed: `docker compose --profile tools run --rm migrate`
 
 ## Customization Tips
 - Seed members: edit `INITIAL_MEMBERS` in `client/src/lib/store.ts`.
