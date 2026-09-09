@@ -109,16 +109,19 @@ Create a `.env` file (copy from `.env.example`) and set:
    `docker compose --profile tools run --rm migrate`
 3. Build and start the app:
    `docker compose up -d --build app`
-4. Open port `5000` in your security group (or put a reverse proxy in front).
+4. Keep host port `5000` closed. The app is exposed only on the Compose network
+   and must be reached through the reverse proxy.
 
-By default the app listens on `http://<server-ip>:5000`.
+The app listens on container port `5000`, but Docker does not publish that port
+on the host.
 
 You can also run the helper script:
 - `bash script/deploy-ec2.sh` (expects a `.env` file in the project root)
 
-If you already have Caddy running in Docker, add a reverse proxy rule that
-points to `http://<host-ip>:5000`, or attach the app container to Caddy's
-network and proxy to the service name.
+For the production Caddy deployment, connect Caddy to the
+`meal_score_default` network and proxy to `meal_score-app-1:5000`. Do not proxy
+to a host IP or add a `5000:5000` port mapping, because either would bypass the
+Caddy and Cloudflare access policy.
 
 ## Deployment Usage (Service Ops)
 - Check running containers: `docker ps`

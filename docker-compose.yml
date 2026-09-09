@@ -6,8 +6,10 @@ services:
     environment:
       PORT: 5000
       DATABASE_URL: ${DATABASE_URL:?DATABASE_URL required}
-    ports:
-      - "5000:5000"
+    # Caddy reaches the app over meal_score_default. Do not publish this port
+    # on the host, which would bypass the Cloudflare and Caddy access policy.
+    expose:
+      - "5000"
     restart: unless-stopped
     healthcheck:
       test: ["CMD", "node", "-e", "require('http').get('http://localhost:5000/api/health',res=>process.exit(res.statusCode===200?0:1)).on('error',()=>process.exit(1))"]
